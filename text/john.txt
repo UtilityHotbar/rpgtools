@@ -1,11 +1,11 @@
 // GM Name: John
 // Starting Mood: 0
-// Intro: Ok, got your dice? Good. You descend into the Caverns of Doom.
 
 Table:Intro
 Ok, got your dice ready? Good.
 Pizza's coming in 50 minutes.
 Pass me the rulebook? 1 sec... got it.
+Ok, got your dice? Good. You descend into the Caverns of Doom.
 
 Table:Encounters
 Encounter
