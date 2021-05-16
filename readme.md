@@ -27,3 +27,9 @@ myTable.table_fetch('TableHeader')
 myTable.table_interact()
 # Interactive table CLI (Use !help for more options)
 ```
+
+## Applications
+
+`lang_gen.py`: Creates constructed languages and translates sentences into them from English.
+
+`mini_dungeon.py`: Simulation of a dungeon master and a very basic dungeon crawler.
