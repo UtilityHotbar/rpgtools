@@ -1,5 +1,5 @@
 import table_process
-import rpgtools
+import main as rpgtools
 import time
 import random
 

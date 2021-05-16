@@ -1,4 +1,4 @@
-import rpgtools
+import main as rpgtools
 import random
 import table_process
 
