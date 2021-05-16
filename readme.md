@@ -11,7 +11,7 @@ A collection of tools for rpgs.
 import rpgtools.main
 print(rpgtools.main.roll('1d6'))
 # Returns a random value from 1 to 6
-myChoice = rpgtools.generate_menu(['Apple', 'Pear', 'Orange'])
+myChoice = rpgtools.main.generate_menu(['Apple', 'Pear', 'Orange'])
 # Creates a menu with three options then returns the index
 ```
 
