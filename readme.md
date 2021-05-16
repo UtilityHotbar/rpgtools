@@ -23,7 +23,7 @@ myChoice = rpgtools.main.generate_menu(['Apple', 'Pear', 'Orange'])
 import rpgtools.table_process
 myTable = rpgtools.table_process.Table('path/to/table.txt')
 myTable.table_fetch('TableHeader')
-# Returns random entry from table
+# Returns random entry from sub-table with header TableHeader
 myTable.table_interact()
 # Interactive table CLI (Use !help for more options)
 ```
