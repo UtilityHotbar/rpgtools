@@ -1,0 +1,74 @@
+Table:v
+cv
+cvc
+vc
+v
+
+Table:c
+c
+cv
+
+Table:V
+ii
+i
+e
+a
+ae
+oh
+oo
+u
+uu
+uh
+ir
+ah
+
+Table:C
+b
+c
+ch
+d
+f
+g
+gh
+h
+j
+k
+kh
+l
+m
+n
+p
+q
+r
+rh
+s
+sh
+t
+ts
+th
+v
+w
+x
+y
+z
+zh
+
+Table:SentenceOrder
+(S) (V) (O) (X)
+(S) (O) (V) (X)
+(S) (X) (O) (V)
+(V) (S) (O) (X)
+(V) (O) (X) (S)
+(V) (O) (S) (X)
+(X) (O) (V) (S)
+
+Table:Gender
+(M) (F)
+(M) (F) (N)
+None
+
+Table:TenseTransformations
+(W)
+(R)
+(P)
+(S)
