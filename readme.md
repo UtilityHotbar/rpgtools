@@ -30,6 +30,6 @@ myTable.table_interact()
 
 ## Applications
 
-`lang_gen.py`: Creates constructed languages and translates sentences into them from English.
+`lang_gen.py`: Creates constructed languages and translates sentences into them from English. Uses Peter de Vocht's [Enhanced Subject Verb Object Extraction](https://github.com/peter3125/enhanced-subject-verb-object-extraction) for translation purposes.
 
 `mini_dungeon.py`: Simulation of a dungeon master and a very basic dungeon crawler.
