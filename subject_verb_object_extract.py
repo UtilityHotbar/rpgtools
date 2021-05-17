@@ -13,10 +13,18 @@
 # limitations under the License.
 
 import spacy
+import sys
 from collections.abc import Iterable
 
 # use spacy small model
-nlp = spacy.load('en_core_web_sm')
+try:
+    nlp = spacy.load('en')
+except OSError:
+    print('Downloading language model for the spaCy POS tagger\n'
+        "(don't worry, this will only happen once)", file=sys.stderr)
+    from spacy.cli import download
+    download('en')
+    nlp = spacy.load('en')
 
 # dependency markers for subjects
 SUBJECTS = {"nsubj", "nsubjpass", "csubj", "csubjpass", "agent", "expl"}
