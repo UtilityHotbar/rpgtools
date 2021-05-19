@@ -18,13 +18,13 @@ from collections.abc import Iterable
 
 # use spacy small model
 try:
-    nlp = spacy.load('en')
+    nlp = spacy.load('en_core_web_sm')
 except OSError:
     print('Downloading language model for the spaCy POS tagger\n'
         "(don't worry, this will only happen once)", file=sys.stderr)
     from spacy.cli import download
-    download('en')
-    nlp = spacy.load('en')
+    download('en_core_web_sm')
+    nlp = spacy.load('en_core_web_sm')
 
 # dependency markers for subjects
 SUBJECTS = {"nsubj", "nsubjpass", "csubj", "csubjpass", "agent", "expl"}
@@ -333,4 +333,3 @@ def findSVOs(tokens):
                                      "!" + v.lower_ if verbNegated else v.lower_,))
 
     return svos
-
