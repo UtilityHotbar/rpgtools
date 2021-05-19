@@ -60,7 +60,7 @@ class Language:
                 print('Attempting to translate:', subword)
                 if subword.is_punct:
                     print('Is punctuation, skipped')
-                    finished_word.append(subword)
+                    finished_word.append(raw_word)
                     continue
                 for data in str(subword.morph).split('|'):
                     if data.startswith('Tense'):
