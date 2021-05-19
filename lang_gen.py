@@ -1,13 +1,17 @@
 import main as rpgtools
 import random
 import table_process
+import spacy.util
+import sys
+
+if not spacy.util.is_package('en_core_web_sm'):
+    print('Downloading spaCy language model for POS tagger.',
+          file=sys.stderr)
+    import spacy.cli.download
+    spacy.cli.download('en_core_web_sm')
 
 import copy
 import subject_verb_object_extract
-from nltk.stem.porter import *
-
-
-stemmer = PorterStemmer()
 
 
 class Language:
