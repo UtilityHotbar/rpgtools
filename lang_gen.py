@@ -40,7 +40,7 @@ class Language:
                     self.dictionary[definition] = c
                     break
                 if exhaustion > 30:  # Create "portmanteau" words when prior word combinations have been exhausted
-                    c = self.word_generator.table_fetch('word')+self.word_generator.fetch('V')+self.word_generator.table_fetch('word')
+                    c = self.word_generator.table_fetch('word')+self.word_generator.table_fetch('V')+self.word_generator.table_fetch('word')
                     if c not in self.existing_words:
                         self.existing_words.append(c)
                         self.dictionary[definition] = c
