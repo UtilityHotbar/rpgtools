@@ -1,7 +1,7 @@
 import re
 import pprint
 import random
-import main as rpgtools
+import coretools as rpgtools
 
 
 VERBOSE = False

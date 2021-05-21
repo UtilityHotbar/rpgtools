@@ -1,4 +1,4 @@
-import main as rpgtools
+import coretools as rpgtools
 import random
 import table_process
 import spacy.util
