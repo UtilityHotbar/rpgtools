@@ -4,6 +4,8 @@ import table_process
 import spacy.util
 import sys
 
+VERBOSE = False
+
 if not spacy.util.is_package('en_core_web_sm'):
     print('Downloading spaCy language model for POS tagger.',
           file=sys.stderr)
@@ -12,6 +14,11 @@ if not spacy.util.is_package('en_core_web_sm'):
 
 import copy
 import subject_verb_object_extract
+
+
+def vbprint(*args):
+    if VERBOSE:
+        print(*args)
 
 
 class Language:
@@ -57,41 +64,41 @@ class Language:
             for subword in word:
                 raw_word = subword.lemma_
                 tense = None
-                print('Attempting to translate:', subword)
+                vbprint('Attempting to translate:', subword)
                 if subword.is_punct:
-                    print('Is punctuation, skipped')
+                    vbprint('Is punctuation, skipped')
                     finished_word.append(raw_word)
                     continue
                 for data in str(subword.morph).split('|'):
                     if data.startswith('Tense'):
                         tense = data.split('=')[1]
-                        print(f'Tense detected: {tense}')
+                        vbprint(f'Tense detected: {tense}')
                 try:
-                    print(self.dictionary[raw_word])
+                    vbprint(self.dictionary[raw_word])
                     target = self.dictionary[raw_word]
                 except KeyError:
-                    print('Making new word')
+                    vbprint('Making new word')
                     target = self.make_new_word(raw_word)
-                print('Raw translation result:', target)
+                vbprint('Raw translation result:', target)
                 # Apply tense transformation if applicable
                 if tense:
                     target = self.apply_tense(target, tense)
-                    print('Applied tense, became:', target)
+                    vbprint('Applied tense, became:', target)
                 finished_word.append(target)
             return ' '.join(finished_word)
         elif mode == 'simple':
             word = word.lower()
-            print('Attempting to translate: ', word)
+            vbprint('Attempting to translate: ', word)
             try:
-                print(self.dictionary[word])
+                vbprint(self.dictionary[word])
                 return self.dictionary[word]
             except KeyError:
-                print('Making new word')
+                vbprint('Making new word')
                 return self.make_new_word(word)
 
     def expand_phrase(self, sentence):
         new_sentence = copy.deepcopy(self.sentence_order)
-        print(new_sentence)
+        vbprint(new_sentence)
         for group in sentence.keys():
             translated_group = []
             for word in sentence[group]:
@@ -99,7 +106,7 @@ class Language:
             for raw_group in new_sentence:
                 if raw_group == group and translated_group:
                     new_sentence[new_sentence.index(raw_group)] = ' '.join(translated_group)
-                    print(new_sentence)
+                    vbprint(new_sentence)
         # Checking for unused groups
         for group in new_sentence:
             if group in self.sentence_order:
@@ -109,7 +116,7 @@ class Language:
     def clever_translate(self, target_phrase):
         tok = subject_verb_object_extract.nlp(target_phrase)
         svos = subject_verb_object_extract.findSVOs(tok)
-        print(svos)
+        vbprint(svos)
         final_sentence = []
         words_used_up = []
         if svos:
@@ -150,7 +157,7 @@ class Language:
     def apply_tense(self, word, tense):
         try:
             transformation = self.tenses[tense]
-            print('Transformation type is:', transformation)
+            vbprint('Transformation type is:', transformation)
             # (W) = Word before (Add the tense word before the actual word)
             if transformation == '(W)':
                 return self.get_word(tense, mode='simple')+' '+word
@@ -166,7 +173,7 @@ class Language:
 
         except KeyError:
             # If no transformation for that tense can be found simply return the word
-            print(f'No transformation for {tense} tense found')
+            vbprint(f'No transformation for {tense} tense found')
             return word
 
 
