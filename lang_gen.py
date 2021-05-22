@@ -4,6 +4,8 @@ import table_process
 import spacy.util
 import sys
 
+# TODO: Numbers and base system
+
 VERBOSE = False
 
 if not spacy.util.is_package('en_core_web_sm'):
