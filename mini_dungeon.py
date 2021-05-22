@@ -23,6 +23,10 @@ class GM:
     def run_session(self, player):
         self.gm_print(self.data.table_fetch('Intro'))
         while player.is_alive:
+            if player.data['HP'] <= 0:
+                self.gm_print('You died!')
+                player.is_alive = False
+            player.xp += 5
             self.gm_print(self.data.table_fetch('RoomText'))
             choice = rpgtools.generate_menu(['Go Deeper', 'Use Item', 'Rest', 'Exit Dungeon'])
             if choice == 0:
@@ -36,10 +40,12 @@ class GM:
                     self.gm_print('Hey, you don\'t have any items!')
             elif choice == 2:
                 self.gm_print('You take a break.')
+                player.data['HP'] = player.data['HPMax']
             elif choice == 3:
-                self.gm_print('Well, that was fun!')
+                self.gm_print(f'Well, that was fun!')
                 break
             self.encounter(player)
+        self.gm_print(f'Your final score was {player.xp}.')
 
     def encounter(self, current_player):  # Overloaded Encounter Dice simulation
         v = self.data.table_fetch('Encounters')
@@ -91,6 +97,25 @@ class GM:
             self.run_combat(current_player, creature)
         elif enctype == 'trap':
             self.gm_print('You encounter a trap!')
+            choice = rpgtools.generate_menu(['Go around it', 'Disarm it', 'Just trip it'])
+            if choice == 0:
+                if current_player.check('DEX'):
+                    self.gm_print('You go around the trap...')
+                else:
+                    self.gm_print('You go around the trap...')
+                    self.gm_print('But it gets you at the last moment!')
+                    current_player.hp -= rpgtools.roll('1d6')
+            elif choice == 1:
+                if current_player.check('INT'):
+                    self.gm_print('You try to disarm the trap...')
+                else:
+                    self.gm_print('You try to disarm the trap...')
+                    self.gm_print('But it gets you at the last moment!')
+                    current_player.hp -= rpgtools.roll('1d6')
+            elif choice == 2:
+                self.gm_print('You boldly march straight into the trap!')
+                current_player.hp -= rpgtools.roll('1d6')
+
 
     def run_combat(self, player, enemy):
         order = [enemy, player]
@@ -126,10 +151,12 @@ class GM:
                 self.gm_print('You flee!')
                 break
             if player.data['HP'] <= 0:
-                self.gm_print('You died!')
-                exit()
+                self.gm_print(f'You fall in battle!')
+                player.is_alive = False
+                break
             elif enemy.data['HP'] <= 0:
                 self.gm_print(f'The {enemy.name} died!')
+                player.xp += 10
                 break
 
 
@@ -154,6 +181,7 @@ class Player:
             'CHA': rpgtools.roll('3d6'),
             'AC': 10,
             'HP': 10,
+            'HPMax': 10,
             'light': 3,
             'hunger': 3
         }
@@ -163,8 +191,10 @@ class Player:
         res = rpgtools.roll('1d20') < self.data[stat]
         if res:
             self.player_print('Pass.')
+            return True
         else:
             self.player_print('Miss.')
+            return False
 
     def use_inventory_item(self, extra_targets=None):
         target = self
@@ -180,11 +210,11 @@ class Player:
                 res = rpgtools.roll('1d20')+self.data['STR']
                 if res > target.data['AC']:
                     self.player_print('Hit.')
-                    choice.use(target)
+                    choice.use(self, target)
                 else:
                     self.player_print('Miss.')
             else:
-                choice.use(target)
+                choice.use(self, target)
 
     def player_print(self, *args):
         print(f'({self.name})', ' '.join(args))
@@ -197,9 +227,13 @@ class Item:
         self.use_case = use
         self.data = data
 
-    def use(self, target):
-        if self.use_case == 'stat' or self.use_case == 'attack':
+    def use(self, user, target):
+        if self.use_case == 'stat':
             target.data[self.data[0]] += rpgtools.roll(self.data[1])
+            print(f'({user.name}) I modify {target.name}\'s {self.data[0]} by {self.data[1]}')
+        elif self.use_case == 'attack':
+            target.data[self.data[0]] += rpgtools.roll(self.data[1])
+            print(f'({user.name}) I deal {self.data[1]} damage to {target.name}')
 
 
 class Monster:
@@ -219,7 +253,6 @@ class Monster:
             elif line[0] == 'Dmg':
                 self.data['Dmg'] = line[1]
                 self.data['DamageName'] = line[2]
-        print(self.name, self.data)
 
 
 def reduce(player, stat, amt):
