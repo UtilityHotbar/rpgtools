@@ -1,7 +1,6 @@
 import table_process
 import coretools as rpgtools
 import time
-import random
 
 
 class GM:
@@ -20,32 +19,37 @@ class GM:
                 self.mood = stripped.replace('Starting Mood: ', '', 1)
         self.data = table_process.Table(profile)
 
-    def run_session(self, player):
+    def run_dungeoncrawl(self, player):
         self.gm_print(self.data.table_fetch('Intro'))
         while player.is_alive:
             if player.data['HP'] <= 0:
                 self.gm_print('You died!')
                 player.is_alive = False
             player.xp += 5
-            self.gm_print(self.data.table_fetch('RoomText'))
-            choice = rpgtools.generate_menu(['Go Deeper', 'Use Item', 'Rest', 'Exit Dungeon'])
-            if choice == 0:
-                self.gm_print('Awesome.')
-                self.dungeon_data['room'] += 1
-            elif choice == 1:
-                if player.inventory:
-                    self.gm_print('Ok, look through your inventory and tell me what you want to use.')
-                    player.use_inventory_item()
-                else:
-                    self.gm_print('Hey, you don\'t have any items!')
-            elif choice == 2:
-                self.gm_print('You take a break.')
-                player.data['HP'] = player.data['HPMax']
-            elif choice == 3:
-                self.gm_print(f'Well, that was fun!')
+            q = self.dungeon_options(player)
+            if q:
                 break
             self.encounter(player)
         self.gm_print(f'Your final score was {player.xp}.')
+
+    def dungeon_options(self, player):
+        self.gm_print(self.data.table_fetch('RoomText'))
+        choice = rpgtools.generate_menu(['Go Deeper', 'Use Item', 'Rest', 'Exit Dungeon'])
+        if choice == 0:
+            self.gm_print('Awesome.')
+            self.dungeon_data['room'] += 1
+        elif choice == 1:
+            if player.inventory:
+                self.gm_print('Ok, look through your inventory and tell me what you want to use.')
+                player.use_inventory_item()
+            else:
+                self.gm_print('Hey, you don\'t have any items!')
+        elif choice == 2:
+            self.gm_print('You take a break.')
+            player.data['HP'] = player.data['HPMax']
+        elif choice == 3:
+            self.gm_print(f'Well, that was fun!')
+            return True
 
     def encounter(self, current_player):  # Overloaded Encounter Dice simulation
         v = self.data.table_fetch('Encounters')
@@ -170,7 +174,9 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.is_alive = True
-        self.inventory = [Item('Rusty Sword', 'attack', ['HP', '-1d6']), Item('Ration', 'stat', ['hunger', 3])]
+        self.inventory = [Item('Rusty Sword', 'attack', ['HP', '-1d6']),
+                          Item('Ration', 'stat', ['hunger', 3], consumable=3),
+                          Item('Torch', 'stat', ['light', 3], consumable=3)]
         self.xp = 0
         self.data = {
             'STR': rpgtools.roll('3d6'),
@@ -222,10 +228,11 @@ class Player:
 
 
 class Item:
-    def __init__(self, name, use, data):
+    def __init__(self, name, use, data, consumable=None):
         self.name = name
         self.use_case = use
         self.data = data
+        self.consumable = consumable
 
     def use(self, user, target):
         if self.use_case == 'stat':
@@ -234,6 +241,10 @@ class Item:
         elif self.use_case == 'attack':
             target.data[self.data[0]] += rpgtools.roll(self.data[1])
             print(f'({user.name}) I deal {self.data[1]} damage to {target.name}')
+        if self.consumable:
+            self.consumable -= 1
+            if self.consumable <= 0:
+                user.inventory.remove(self)
 
 
 class Monster:
@@ -262,4 +273,4 @@ def reduce(player, stat, amt):
 if __name__ == '__main__':
     myGM = GM('text/john.txt')
     myPlayer = Player(input('Enter your name: '))
-    myGM.run_session(myPlayer)
+    myGM.run_dungeoncrawl(myPlayer)
