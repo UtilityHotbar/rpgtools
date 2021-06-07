@@ -27,19 +27,19 @@ def roll(dice_string) -> int:
     return eval(dice_string)
 
 
-def generate_menu(options, prompt=None, response_mode='index', use_attr=None, use_index=None):
+def generate_menu(options, prompt=None, response_mode='index', use_attr=None, use_index=None, printfunc=print):
     if not prompt:
-        print('Your options are:')
+        printfunc('Your options are:')
     else:
-        print(prompt)
+        printfunc(prompt)
     i = 1
     for option in options:
         if use_attr:
-            print(f'{i}. {option.__getattribute__(use_attr)}')
+            printfunc(f'{i}. {option.__getattribute__(use_attr)}')
         elif use_index:
-            print(f'{i}. {option[use_index]}')
+            printfunc(f'{i}. {option[use_index]}')
         else:
-            print(f'{i}. {option}')
+            printfunc(f'{i}. {option}')
         i += 1
     i -= 1
     while True:
@@ -50,7 +50,7 @@ def generate_menu(options, prompt=None, response_mode='index', use_attr=None, us
                 raise ValueError
             break
         except ValueError:
-            print(f'Error - Please enter a number from 1 to {i}')
+            printfunc(f'Error - Please enter a number from 1 to {i}')
     if response_mode == 'index':
         return response-1
     else:
